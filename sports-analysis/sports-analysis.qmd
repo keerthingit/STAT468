@@ -2,9 +2,76 @@
 title: "sports-analysis"
 ---
 
-## Quarto
+## Sports Analysis
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Author
+
+Keerthi Kiran
+
+University of Waterloo
+
+## Assignment 1 Part 2
 
 ```{r}
+library(tidyverse)
+library(volleystat)
 ```
+
+## Q1
+```{r}
+select_players <- players |> 
+  filter(season_id == 1819) |> 
+  select(team_id, height, position, 
+         player_id, league_gender) 
+  
+select_matchstats <- matchstats |> 
+  filter(season_id == 1819) |> 
+  mutate(att_rate = att_pt/att_tot) |> 
+  select(match_id, player_id, att_rate, 
+         team_id, league_gender)   
+  
+player_matchstats <- select_matchstats |> 
+  left_join(select_players,
+            by = c("player_id", 
+                   "team_id", 
+                   "league_gender")) 
+
+height_att_rate <- player_matchstats |> 
+  group_by(player_id, team_id, league_gender) |> 
+  summarize(
+    avg_height = mean(height, na.rm = TRUE),
+    avg_att_rate = mean(att_rate, na.rm = TRUE)
+  )
+
+ggplot(
+  data = height_att_rate, 
+  mapping = aes(x = avg_height, y = avg_att_rate)
+) + geom_point() + geom_smooth(method = "lm") + 
+  labs(
+    title = "Player Height and Attack Success Rate",
+    subtitle = "Grouped by Player, Team, and League Gender",
+    x = "Average Player Height",
+    y = "Average Attack Success Rate"
+  )
+
+ggplot(
+  data = height_att_rate, 
+  mapping = aes(x = avg_height, y = avg_att_rate)
+) + geom_point(aes(color = league_gender)) + geom_smooth(method = "lm") + 
+  labs(
+    title = "Player Height and Attack Success Rate",
+    x = "Average Player Height",
+    y = "Average Attack Success Rate", 
+    color = "Gender"
+  )
+```
+::: {.pagebreak}
+## Q2
+```{r}
+ggplot(
+  data = players, 
+  mapping = aes(x = gender, y = height)
+) + geom_boxplot()
+```
+
+
