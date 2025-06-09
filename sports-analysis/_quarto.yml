@@ -1,5 +1,10 @@
 project:
+  type: website
+  output-dir: docs
   title: "sports-analysis"
 
 editor: visual
+website: 
+  title: "Sports Analysis"
+
 
